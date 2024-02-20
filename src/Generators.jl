@@ -34,18 +34,36 @@ end
 
 function add_tribe!(island)
     points = island.elevations |> keys
-    sethue("red")
+
     steepness = 1
     mecca = O
     while steepness > 0.02
         mecca = rand(points)
         bb = box(mecca, 20, 20) |> BoundingBox
-        elevations = [
-            island.elevations[p]
-            for p in bb
-            if haskey(island.elevations, p)
-        ]
+        elevations = []
+        for p in bb
+            if p ∉ points
+                continue
+            end
+            push!(elevations, island.elevations[p])
+        end
         steepness = std(elevations)
     end
-    circle(mecca, 5, :fill)
+
+    mecca_sides = rand(3:6)
+
+    satellites = Dict{Point,Integer}()
+    satellite_count = rand(0:3)
+    for _ in 1:satellite_count
+        r = rand(0:2π)
+        x = mecca.x + 12cos(r) |> round
+        y = mecca.y + 12sin(r) |> round
+        p = Point(x, y)
+        if p ∉ points
+            sides = rand(3:mecca_sides)
+            satellites[p] = sides
+        end
+    end
+
+    island.mecca = Mecca(mecca, mecca_sides, satellites)
 end

@@ -1,8 +1,15 @@
 using Luxor
 
-struct Island
+struct Mecca
+    location::Point
+    sides::Integer
+    satellites::Dict{Point,Integer}
+end
+
+mutable struct Island
     border::Vector{Point}
     elevations::Dict{Point,AbstractFloat}
+    mecca::Union{Mecca,Nothing}
 end
 
 function noisify(x, y, nw)
