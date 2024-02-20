@@ -17,6 +17,7 @@ function draw()
         elevation_color(e) |> setcolor
         paint(point)
     end
+    add_tribe!(island)
 end
 
 @png draw() WIDTH HEIGHT "image.png"
