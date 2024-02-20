@@ -13,19 +13,16 @@ end
 function make_elevation!(island::Island)
     bb = BoundingBox(island.border)
     distmap = Dict{Point,AbstractFloat}()
-    for x in bb.corner1.x:bb.corner2.x
-        for y in bb.corner1.y:bb.corner2.y
-            p = Point(x, y)
-            if !isinside(p, island.border)
-                continue
-            end
-
-            distances = []
-            for bp in island.border
-                push!(distances, √distance(p, bp))
-            end
-            distmap[p] = minimum(distances)
+    for p in bb
+        if !isinside(p, island.border)
+            continue
         end
+
+        distances = []
+        for bp in island.border
+            push!(distances, √distance(p, bp))
+        end
+        distmap[p] = minimum(distances)
     end
     max_dist = distmap |> values |> maximum
 
@@ -43,16 +40,11 @@ function add_tribe!(island)
     while steepness > 0.02
         mecca = rand(points)
         bb = box(mecca, 20, 20) |> BoundingBox
-        elevations = []
-        for x in bb.corner1.x:bb.corner2.x
-            for y in bb.corner1.y:bb.corner2.y
-                p = Point(x, y)
-                if !haskey(island.elevations, p)
-                    continue
-                end
-                push!(elevations, island.elevations[p])
-            end
-        end
+        elevations = [
+            island.elevations[p]
+            for p in bb
+            if haskey(island.elevations, p)
+        ]
         steepness = std(elevations)
     end
     circle(mecca, 5, :fill)

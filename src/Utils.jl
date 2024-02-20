@@ -14,6 +14,20 @@ end
 
 paint(p::Point) = box(p, 1, 1, :fill)
 
+Base.iterate(bb::BoundingBox) = (bb.corner1, 1)
+function Base.iterate(bb::BoundingBox, i)
+    width = bb.corner2.x - bb.corner1.x + 1
+    height = bb.corner2.y - bb.corner1.y + 1
+    bsize = width * height
+    if i ≥ bsize
+        return nothing
+    end
+    y, x = divrem(i, width)
+    x += bb.corner1.x
+    y += bb.corner1.y
+    return (Point(x, y), i + 1)
+end
+
 function elevation_color(e)
     if e ≤ 0.1
         "#D3CA9D"
