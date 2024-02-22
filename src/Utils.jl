@@ -19,6 +19,14 @@ mutable struct Island
     tribe::Union{Tribe,Nothing}
 end
 
+macro chance(chance, action)
+    quote
+        if rand() < $chance
+            $(esc(action))
+        end
+    end
+end
+
 function noisify(x, y, nw)
     ns = 1 / nw
     nx = nw * noise(ns * x, ns * y, 0) - nw / 2
