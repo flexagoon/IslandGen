@@ -1,15 +1,22 @@
 using Luxor
 
+const ° = π / 180
+
 struct Mecca
-    location::Point
     sides::Integer
     satellites::Dict{Point,Integer}
+end
+
+mutable struct Tribe
+    location::Point
+    houses::Vector{Point}
+    mecca::Union{Mecca,Nothing}
 end
 
 mutable struct Island
     border::Vector{Point}
     elevations::Dict{Point,AbstractFloat}
-    mecca::Union{Mecca,Nothing}
+    tribe::Union{Tribe,Nothing}
 end
 
 function noisify(x, y, nw)

@@ -1,7 +1,7 @@
 using Statistics
 
 function make_island!(island::Island)
-    for r in 0:π/180:2π
+    for r in 0:1°:360°
         x = (WIDTH / 4) * cos(r)
         y = (HEIGHT / 4) * sin(r)
         x, y = noisify(x, y, 300)
@@ -34,12 +34,11 @@ end
 
 function add_tribe!(island)
     points = island.elevations |> keys
-
     steepness = 1
-    mecca = O
+    location = O
     while steepness > 0.02
-        mecca = rand(points)
-        bb = box(mecca, 20, 20) |> BoundingBox
+        location = rand(points)
+        bb = box(location, 20, 20) |> BoundingBox
         elevations = []
         for p in bb
             if p ∉ points
@@ -50,20 +49,40 @@ function add_tribe!(island)
         steepness = std(elevations)
     end
 
-    mecca_sides = rand(3:6)
+    houses = Point[]
+    house_count = rand(1:5)
+    for _ in 1:house_count
+        r = rand(0:5°:360°)
+        dist = rand(19:22)
+        x = location.x + dist * cos(r) |> round
+        y = location.y + dist * sin(r) |> round
+        p = Point(x, y)
+        if p ∈ points
+            push!(houses, p)
+        end
+    end
 
+    island.tribe = Tribe(location, houses, nothing)
+end
+
+function add_mecca!(island)
+    if isnothing(island.tribe)
+        return
+    end
+
+    points = island.elevations |> keys
+    mecca_sides = rand(3:6)
     satellites = Dict{Point,Integer}()
-    satellite_count = rand(0:3)
+    satellite_count = rand(0:min(3, length(island.tribe.houses)))
     for _ in 1:satellite_count
-        r = rand(0:2π)
-        x = mecca.x + 12cos(r) |> round
-        y = mecca.y + 12sin(r) |> round
+        r = rand(0:1°:360°)
+        x = island.tribe.location.x + 12cos(r) |> round
+        y = island.tribe.location.y + 12sin(r) |> round
         p = Point(x, y)
         if p ∈ points
             sides = rand(3:mecca_sides)
             satellites[p] = sides
         end
     end
-
-    island.mecca = Mecca(mecca, mecca_sides, satellites)
-end
+    island.tribe.mecca = Mecca(mecca_sides, satellites)
+end;
