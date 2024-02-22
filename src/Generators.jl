@@ -18,10 +18,7 @@ function make_elevation!(island::Island)
             continue
         end
 
-        distances = []
-        for bp in island.border
-            push!(distances, √distance(p, bp))
-        end
+        distances = [√distance(p, bp) for bp in island.border]
         distmap[p] = minimum(distances)
     end
     max_dist = distmap |> values |> maximum
@@ -39,13 +36,7 @@ function add_tribe!(island)
     while steepness > 0.02
         location = rand(points)
         bb = box(location, 20, 20) |> BoundingBox
-        elevations = []
-        for p in bb
-            if p ∉ points
-                continue
-            end
-            push!(elevations, island.elevations[p])
-        end
+        elevations = [island.elevations[p] for p in bb if p ∈ points]
         steepness = std(elevations)
     end
 
