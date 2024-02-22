@@ -5,7 +5,7 @@ function make_island!(island::Island)
         x = (WIDTH / 4) * cos(r)
         y = (HEIGHT / 4) * sin(r)
         x, y = noisify(x, y, 300)
-        x, y = noisify(x, y, 35)
+        x, y = noisify(x, y, 35) .|> round
         push!(island.border, Point(x, y))
     end
 end
@@ -14,7 +14,7 @@ function make_elevation!(island::Island)
     bb = BoundingBox(island.border)
     distmap = Dict{Point,AbstractFloat}()
     for p in bb
-        if !isinside(p, island.border)
+        if !isinside(p, island.border; allowonedge=true)
             continue
         end
 
@@ -59,7 +59,7 @@ function add_tribe!(island)
         x = mecca.x + 12cos(r) |> round
         y = mecca.y + 12sin(r) |> round
         p = Point(x, y)
-        if p ∉ points
+        if p ∈ points
             sides = rand(3:mecca_sides)
             satellites[p] = sides
         end
