@@ -17,6 +17,7 @@ mutable struct Island
     border::Vector{Point}
     elevations::Dict{Point,AbstractFloat}
     tribe::Union{Tribe,Nothing}
+    castaway::Union{Point,Nothing}
 end
 
 macro chance(chance, action)
@@ -70,4 +71,4 @@ function elevation_color(e)
     else
         "#94BF8B"
     end
-end;
+end

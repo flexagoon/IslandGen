@@ -76,4 +76,20 @@ function add_mecca!(island)
         end
     end
     island.tribe.mecca = Mecca(mecca_sides, satellites)
-end;
+end
+
+function add_castaway!(island)
+    possible_points = filter(
+        e -> 0.1 < last(e) ≤ 0.2,
+        island.elevations
+    ) |> keys
+
+    if !isnothing(island.tribe)
+        possible_points = filter(
+            p -> distance(p, island.tribe.location) > 120,
+            possible_points
+        )
+    end
+
+    island.castaway = rand(possible_points)
+end
